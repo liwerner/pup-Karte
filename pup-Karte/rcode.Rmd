@@ -1,0 +1,96 @@
+---
+title: "PuP-Karte"
+output: html_document
+date: "2024-04-02"
+---
+
+
+# Pre-requisites
+
+Das hier einfach laufen lassen, damit alle notwendigen Pakete da sind:
+```{r setup, include=FALSE}
+# required packages
+p_needed <- c(
+  "readxl",
+  "dplyr",
+  "leaflet",
+  "leaflet.extras",
+  "htmltools",
+  "htmlwidgets",
+  "widgetframe",
+  "sf"
+)
+
+# installed packages
+packages <- rownames(installed.packages())
+
+# missing packages
+p_to_install <- p_needed[!(p_needed %in% packages)]
+
+# install missing packages
+if (length(p_to_install) > 0) {
+  install.packages(p_to_install)
+}
+
+# load packages
+sapply(p_needed, require, character.only = TRUE)
+
+#set working directory
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+```
+
+Hier wird das Logo als Karten-Icon generiert:
+```{r}
+pup_logo <- makeIcon(
+  iconUrl = "Logo_PuP.png",
+   iconWidth = 40, iconHeight = 40
+)
+```
+
+Die veranstaltungsliste wird geladen:
+```{r}
+data <- readxl::read_xlsx("Angemeldete Veranstaltungen.xlsx")
+
+data$Longitude <- data$Longitude / 1000000
+data$Latitude  <- data$Latitude / 1000000
+```
+
+Create Map
+
+```{r}
+mytext <- paste(
+  "<b>Herzliche Einladung!</b>", "<br/>",
+  "<b>Wer? </b>", data$`Wer?`, "<br/>",
+  "<b>Wann? </b>", data$`Wann?`, "<br/>",
+  "<b>Wo? </b>", data$`Wo?`, "<br/>",
+  data$`Weitere Infos`,
+  sep = "") %>%
+  lapply(htmltools::HTML)
+
+my_spdf <- sf::st_read(
+  dsn = paste0(getwd(), "/MAPS"),
+  layer = "layer",
+  quiet = TRUE
+)
+
+other_map <- leaflet(my_spdf) %>%
+  addTiles() %>% 
+  addMarkers(
+    lng = data$Longitude,
+    lat = data$Latitude,
+    icon = pup_logo,
+    popup = mytext
+  )
+
+final <- other_map %>%
+        leaflet.extras::addSearchOSM(options = searchOptions(collapsed = TRUE))
+
+final <- final %>%
+  addProviderTiles(providers$OpenStreetMap.DE)
+  
+htmlwidgets::saveWidget(
+widgetframe::frameableWidget(final), "karte_marker.html")
+```
+
+
