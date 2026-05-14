@@ -60,7 +60,7 @@ final_map <- leaflet() %>%
 dir.create("output", showWarnings = FALSE)
 
 htmlwidgets::saveWidget(
-  final,
+  final_map,
   "output/karte_marker.html",
   selfcontained = FALSE
 )
