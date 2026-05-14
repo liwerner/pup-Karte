@@ -1,6 +1,9 @@
 name: Render Map
 
 on:
+  schedule:
+    - cron: "0 * * * *"
+    
   push:
     paths:
       - 'data/**'
