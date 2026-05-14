@@ -62,5 +62,5 @@ dir.create("output", showWarnings = FALSE)
 htmlwidgets::saveWidget(
   final_map,
   "output/karte_marker.html",
-  selfcontained = FALSE
+  selfcontained = TRUE
 )
