@@ -1,5 +1,5 @@
 p_needed <- c(
-  "readxl",
+  "readr",
   "dplyr",
   "leaflet",
   "leaflet.extras",
@@ -18,7 +18,8 @@ invisible(lapply(p_needed, library, character.only = TRUE))
 
 
 # DATA (GitHub-safe path)
-data <- readxl::read_xlsx("data/Angemeldete Veranstaltungen.xlsx")
+url <- "https://docs.google.com/spreadsheets/d/1tMwoefe5q9gbBkV32zhc_ERVCD5JmfmLl7TGuu0H2i0/export?format=csv" 
+data <- readr::read_csv(url)
 
 data$Longitude <- data$Longitude / 1000000
 data$Latitude  <- data$Latitude / 1000000
