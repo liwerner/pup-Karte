@@ -5,7 +5,6 @@ p_needed <- c(
   "leaflet.extras",
   "htmltools",
   "htmlwidgets",
-  "widgetframe",
   "sf"
 )
 
